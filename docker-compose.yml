@@ -1,0 +1,44 @@
+version: "3.8" # Version for the docker compose
+services:
+
+  # Orion is the context broker
+  orion:
+    image: fiware/orion:3.7.0 # Loads this image from Docker Hub
+    hostname: orion # Create a hostname to be easier to find the container in the network
+    container_name: fiware-orion # Create a container name to be easier to get information for it
+    depends_on:
+      - mongo-db # Database for persinting eantity information from orion
+    networks:
+      - default # Users a local network called default
+    ports:
+      - "1026:1026" # match port 1026 on the machine to the one in the container
+    command: -dbhost mongo-db -logLevel DEBUG -noCache
+    healthcheck: # check if orion is healthy
+      test: curl --fail -s http://orion:1026/version || exit 1
+      interval: 10s
+
+
+  # Databases
+  mongo-db:
+    image: mongo:4.4 # Loads this image from Docker Hub
+    hostname: mongo-db # Create a hostname to be easier to find the container in the network
+    container_name: db-mongo # Create a container name to be easier to get information for it
+    expose:
+      - "27017" # Expose this port to the network
+    ports:
+      - "27017:27017" # match port 27017 on the machine to the one in the container
+    networks:
+      - default # Users a local network called default
+    volumes: # Uses a volume to persit the data in the database
+      - mongo-db:/data
+    healthcheck: # check if Mongo DB is healthy
+      test: |
+        host=`hostname --ip-address || echo '127.0.0.1'`; 
+        mongo --quiet $host/test --eval 'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)' && echo 0 || echo 1
+      interval: 5s
+
+
+networks: # Create a network for the docker containers
+  default:
+volumes: # Creates a volume to persit the data in the database
+  mongo-db: ~
