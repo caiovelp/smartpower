@@ -49,7 +49,7 @@ def lamp01():
             return make_response(json.dumps({"error": "Method not allowed"}), 405)
 
 
-# Function to send data to the iot agent
+# Function to send datasources to the iot agent
 def send_lamp_data(elapsed_time):
     url = "http://fiware-iot-agent-json:7896/iot/json?k=4jggokgpepnvsb2uv4s40d59ov&i=device001"
 
@@ -66,7 +66,7 @@ def send_lamp_data(elapsed_time):
     try:
         response = requests.request("POST", url, headers=headers, data=payload)
     except:
-        print("Error sending data")
+        print("Error sending datasources")
 
 
 def lamp_timer():
@@ -81,7 +81,7 @@ def lamp_timer():
             elapsed_time = (datetime.now() - lamp_on_timestamp).total_seconds()
             send_lamp_data(elapsed_time)
 
-            # Reset the timestamp every time data is sent
+            # Reset the timestamp every time datasources is sent
             lamp_on_timestamp = datetime.now()
 
             time.sleep(INTERVAL.value)

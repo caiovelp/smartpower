@@ -28,8 +28,8 @@ services:
       - "27017:27017" # match port 27017 on the machine to the one in the container
     networks:
       - default # Users a mock network called default
-    volumes: # Uses a volume to persit the data in the database
-      - mongo-db:/data
+    volumes: # Uses a volume to persit the datasources in the database
+      - mongo-db:/datasources
     healthcheck: # check if Mongo DB is healthy
       test: |
         host=`hostname --ip-address || echo '127.0.0.1'`; 
@@ -100,8 +100,8 @@ services:
       - "5050:5050" # localhost:5050
       - "5080:5080" # localhost:5080
     environment:
-      - "CYGNUS_MYSQL_SERVICE_PORT=5050" # Notification Port that Cygnus listens when subcribing to context data changes
-      - "CYGNUS_MYSQL_HOST=mysql-db" # Hostname of the MySQL server used to persist historical context data
+      - "CYGNUS_MYSQL_SERVICE_PORT=5050" # Notification Port that Cygnus listens when subcribing to context datasources changes
+      - "CYGNUS_MYSQL_HOST=mysql-db" # Hostname of the MySQL server used to persist historical context datasources
       - "CYGNUS_MYSQL_PORT=3306" # Port that the MySQL server uses to listen to commands
       - "CYGNUS_MYSQL_USER=root" # Username for the MySQL database user
       - "CYGNUS_MYSQL_PASS=123" # Password for the MySQL database user
@@ -130,18 +130,22 @@ services:
 
   grafana:
     image: grafana/grafana
-    hostname: grafana
-    container_name: grafana
+    hostname: dashboards
+    container_name: dashboards
     depends_on:
       - mysql-db
     ports:
       - "3000:3000"
+    env_file:
+      - ./.env
+    volumes:
+      - ./provisioning:/etc/grafana/provisioning
 
 
 
 networks: # Create a network for the docker containers
   default:
 
-volumes: # Creates a volume to persist the data in the database
+volumes: # Creates a volume to persist the datasources in the database
   mongo-db: ~
   mysql-db: ~

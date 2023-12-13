@@ -18,14 +18,14 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 1,
+  "id": 2,
   "links": [],
   "liveNow": false,
   "panels": [
     {
       "datasource": {
         "type": "mysql",
-        "uid": "a98978dd-0c38-4056-9dcb-9d987a27d0a9"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -43,8 +43,8 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
-        "w": 12,
+        "h": 10,
+        "w": 24,
         "x": 0,
         "y": 0
       },
@@ -88,12 +88,12 @@
           "dataset": "mysql",
           "datasource": {
             "type": "mysql",
-            "uid": "a98978dd-0c38-4056-9dcb-9d987a27d0a9"
+            "uid": "${datasource}"
           },
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT \n  UNIX_TIMESTAMP(recvTime) as \"time\",\n  CAST(attrValue as decimal(5,2)) as \"value\"\nFROM \n  openiot.`urn_ngsi-ld_Device_001_Device`\nWHERE attrName = \"time_on\"\nORDER BY \"time\";",
+          "rawSql": "SELECT \n  UNIX_TIMESTAMP(recvTime) as \"time\",\n  CAST(attrValue as decimal(5,2)) as \"value\"\nFROM \n  openiot.`urn_ngsi-ld_Device_001_Device`\nWHERE attrName = \"time_on\" ORDER BY \"time\";\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -114,13 +114,13 @@
           }
         }
       ],
-      "title": "Panel Title",
+      "title": "Heatmap",
       "type": "heatmap"
     },
     {
       "datasource": {
         "type": "mysql",
-        "uid": "a98978dd-0c38-4056-9dcb-9d987a27d0a9"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -128,9 +128,9 @@
             "mode": "thresholds"
           },
           "custom": {
-            "align": "auto",
+            "align": "center",
             "cellOptions": {
-              "type": "auto"
+              "type": "color-background"
             },
             "inspect": false
           },
@@ -143,30 +143,69 @@
                 "value": null
               },
               {
-                "color": "red",
-                "value": 80
+                "color": "transparent",
+                "value": 0
               }
             ]
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "custo em R$"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "dark-green",
+                      "value": null
+                    },
+                    {
+                      "color": "dark-green",
+                      "value": 0.25
+                    },
+                    {
+                      "color": "#EAB839",
+                      "value": 0.5
+                    },
+                    {
+                      "color": "dark-red",
+                      "value": 1
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
-        "h": 8,
-        "w": 12,
+        "h": 13,
+        "w": 24,
         "x": 0,
-        "y": 8
+        "y": 10
       },
       "id": 1,
       "options": {
-        "cellHeight": "sm",
+        "cellHeight": "md",
         "footer": {
           "countRows": false,
-          "fields": "",
+          "enablePagination": false,
+          "fields": [
+            "custo em R$",
+            "tempo_ligado(segundos)",
+            "tempo_ligado(horas)",
+            "tempo_ligado(dia)"
+          ],
           "reducer": [
             "sum"
           ],
-          "show": false
+          "show": true
         },
         "showHeader": true
       },
@@ -176,12 +215,12 @@
           "dataset": "mysql",
           "datasource": {
             "type": "mysql",
-            "uid": "a98978dd-0c38-4056-9dcb-9d987a27d0a9"
+            "uid": "${datasource}"
           },
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT\n  EXTRACT(MONTH FROM recvTime) AS month,\n  SUM(attrValue) as \"tempo_ligado(segundos)\",\n  ((SUM(attrValue) * 9)/(3600*1000) * 0.40) as \"custo em R$\"\nFROM \n  openiot.`urn_ngsi-ld_Device_001_Device`\nGROUP BY\n  EXTRACT(MONTH FROM recvTime)\nORDER BY\n  month;",
+          "rawSql": "SELECT\n  EXTRACT(MONTH FROM recvTime) AS \"Mês\",\n  SUM(attrValue) as \"Tempo Ligado (segundos)\",\n  SUM(attrValue)/3600 as \"Tempo Ligado (horas)\",\n  SUM(attrValue)/86400 as \"Tempo Ligado (dia)\",\n  ((SUM(attrValue) * 9)/(3600*1000) * 0.40) as \"custo em R$\"\nFROM\n  openiot.`urn_ngsi-ld_Device_001_Device`\nGROUP BY EXTRACT(MONTH FROM recvTime)\nORDER BY Mês;\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -202,7 +241,7 @@
           }
         }
       ],
-      "title": "Panel Title",
+      "title": "Tabela de custo e tempo ligado",
       "type": "table"
     }
   ],
@@ -210,7 +249,26 @@
   "schemaVersion": 38,
   "tags": [],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "MySQL Dummy Device",
+          "value": "P8B97B6FCF052BE81"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "datasource",
+        "options": [],
+        "query": "mysql",
+        "queryValue": "",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      }
+    ]
   },
   "time": {
     "from": "now-3h",
@@ -220,6 +278,6 @@
   "timezone": "",
   "title": "Dummy Device",
   "uid": "dabd9bd0-b1ed-4f31-a55c-5918f570046c",
-  "version": 1,
+  "version": 2,
   "weekStart": ""
 }
