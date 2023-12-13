@@ -1,4 +1,3 @@
-#Faculdade #Optativa #TCC00275
 Esse projeto representa um dispositivo fictício de uma lâmpada inteligente, onde esse dispositivo pode ser ligado/desligado. Esse dispositivo fictício pode ser replicado, ou seja, pode-se conectar múltiplas lâmpadas no ambiente IoT do projeto, onde eles são conectados usando o **IoT Agent JSON** da plataforma FIWARE. Esse IoT Agent permite que as medições (tempo que a lâmpada está desligada) possam ser lidas e os comandos possam ser enviados usando solicitações NGSI-v2 ao **Orion Context Broker**, um outro componente da plataforma FIWARE, no caso o Broker.
 
 Além do **FIWARE IoT Agent JSON** e do **FIWARE Orion Context Broker**, esse projeto também conta com o **FIWARE Cygnus**, um ativador genérico que é usado para persistir dados de contexto em bancos de dados terceiros. Esses dados podem ser recuperados e visualizados em um dashboard que foi desenvolvimento com a aplicação web de dashboard chamado Grafana.
